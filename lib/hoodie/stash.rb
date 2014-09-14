@@ -92,9 +92,6 @@ module Stash
     # @return [Hash, Array, String] value for key
     #
     def cache(key = nil, &code)
-      puts "do we have key? #{key.blank?}"
-      puts "What's are caller? #{Stash.caller_name}"
-      puts "what's @store[key.to_sym] => #{@store[key.to_sym]}"
       key ||= Stash.caller_name
       @store[key.to_sym] ||= code.call
     end

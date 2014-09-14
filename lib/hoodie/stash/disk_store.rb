@@ -109,7 +109,8 @@ module DiskStash
       if OS.windows?
         win_friendly_path(::File.join(tmp, '._stash'))
       else
-        ::File.join(tmp, '._stash')
+        '_stash'
+        # ::File.join(tmp, '._stash')
       end
     end
 
