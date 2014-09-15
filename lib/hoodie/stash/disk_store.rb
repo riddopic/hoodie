@@ -36,7 +36,7 @@ module DiskStash
     #
     def initialize(store = file_store)
     	@store = store
-      ensure_store_directory
+      _ensure_store_directory
     end
 
 	  # Clear the whole stash or the value of a key
@@ -58,11 +58,9 @@ module DiskStash
     end
 
 		# Retrieves the value for a given key, if nothing is set,
-    # returns KeyError
+    # returns nil
     #
     # @param key [Symbol, String] representing the key
-    #
-    # @raise [KeyError] if no such key found
     #
     # @return [Hash, Array, String] value for key
     #
@@ -70,11 +68,11 @@ module DiskStash
       if key.is_a? Array
         hash = {}
         key.each do |k|
-          hash[k] = Marshal::load(read_cache_file(k))
+          hash[k] = Marshal::load(_read_cache_file(k))
         end
         hash unless hash.empty?
       else
-        Marshal::load(read_cache_file(key))
+        Marshal::load(_read_cache_file(key))
       end
     rescue Errno::ENOENT
       nil # key hasn't been created
@@ -83,7 +81,7 @@ module DiskStash
     # Store the given value with the given key, either an an argument
     # or block. If a previous value was set it will be overwritten
     # with the new value.
-    #    #
+    #
     # @param key [Symbol, String] representing the key
     # @param value [Object] that represents the value (optional)
     # @param block [&block] that returns the value to set (optional)
@@ -91,7 +89,7 @@ module DiskStash
     # @return nothing.
     #
     def []=(key, value)
-    	write_cache_file(key, Marshal::dump(value))
+    	_write_cache_file(key, Marshal::dump(value))
     end
 
 		# returns path to cache file with 'key'
@@ -123,7 +121,7 @@ module DiskStash
       path.gsub!(::File::SEPARATOR, (::File::ALT_SEPARATOR || '\\'))
     end
 
-    def write_cache_file(key, content)
+    def _write_cache_file(key, content)
       f = ::File.open(cache_file(key), 'w+' )
       f.flock(::File::LOCK_EX)
       f.write(content)
@@ -131,7 +129,7 @@ module DiskStash
       content
     end
 
-    def read_cache_file(key)
+    def _read_cache_file(key)
     	f = ::File.open(cache_file(key), 'r')
     	f.flock(::File::LOCK_SH)
     	out = f.read
@@ -144,7 +142,7 @@ module DiskStash
 	  	::File.mtime(cache_file(key))
 	  end
 
-	  def ensure_store_directory
+	  def _ensure_store_directory
 	  	::Dir.mkdir(store) unless ::File.directory?(store)
 	  end
 	end

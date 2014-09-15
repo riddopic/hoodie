@@ -19,13 +19,11 @@
 
 require 'hoodie/stash/mem_store'
 require 'hoodie/stash/disk_store'
-require 'hoodie/path_finder'
 require 'hoodie/memoizable'
 require 'hoodie/obfuscate'
 require 'hoodie/version'
 require 'hoodie/utils'
 require 'hoodie/stash'
 require 'hoodie/blank'
-require 'hoodie/file'
 require 'hoodie/hash'
 require 'hoodie/os'

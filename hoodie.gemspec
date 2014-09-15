@@ -6,7 +6,7 @@ require "hoodie/version"
 
 Gem::Specification.new do |s|
   s.name        = 'hoodie'
-  s.version     = Hoddie::VERSION
+  s.version     = Hoodie::VERSION
   s.platform    = Gem::Platform::RUBY
   s.date        = Time.now.strftime("%Y-%m-%d")
   s.summary     = 'Pragmatic hoodie concurrency hipster with ruby'

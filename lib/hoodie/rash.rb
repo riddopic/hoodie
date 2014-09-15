@@ -18,25 +18,53 @@
 #
 
 # TODO: This doesn't belong in here, it's cookbook specific...
-require 'anemone' unless defined?(Anemone)
+require 'anemone'           unless defined?(Anemone)
 require 'hoodie/memoizable' unless defined?(Memoizable)
 
-class PathFinder
+class Rash
   include Memoizable
 
-  def initialize(url)
+  def initialize(url, path)
     @url = url
+    @path = path
     memoize [:fetch], Stash.new(DiskStash::Cache.new)
+    @store = fetch
   end
 
-  def fetch(path)
+  def fetch
     results = []
     Anemone.crawl(@url, discard_page_bodies: true) do |anemone|
-      anemone.on_pages_like(/\/#{path}\/\w+\/\w+\.(ini|zip)$/i) do |page|
+      anemone.on_pages_like(/\/#{@path}\/\w+\/\w+\.(ini|zip)$/i) do |page|
         results << page.to_hash
       end
     end
     results.reduce({}, :recursive_merge)
+  end
+
+  # Retrieves the value for a given key
+  #
+  # @param key [Symbol, String] representing the key
+  #
+  # @return [Hash, Array, String] value for key
+  #
+  def [](key)
+    @store[key]
+  end
+
+  # return the size of the store as an integer
+  #
+  # @return [Fixnum]
+  #
+  def size
+    @store.size
+  end
+
+  # return all keys in the store as an array
+  #
+  # @return [Array<String, Symbol>] all the keys in store
+  #
+  def keys
+    @store.keys
   end
 end
 

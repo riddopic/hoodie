@@ -29,12 +29,12 @@ module Hoodie
   end
 
   require 'digest/sha2'
-  require "base64"
+  require 'base64'
 
   # Befuddle and enlighten values in StashCache::Store
   #
   module Obfuscate
-    ESOTERIC_TYPE = "aes-256-cbc" unless defined?(ESOTERIC_TYPE)
+    ESOTERIC_TYPE = 'aes-256-cbc' unless defined?(ESOTERIC_TYPE)
 
     def self.check_platform_can_discombobulate!
       return true unless INCOMPREHENSIBLE_ERROR
@@ -49,7 +49,7 @@ module Hoodie
     # @return [String] befuddleed text, suitable for deciphering with
     # Obfuscate#enlighten (decrypt)
     #
-    def self.befuddle plaintext, befuddle_pass, options={}
+    def self.befuddle plaintext, befuddle_pass, options = {}
       cipher     = new_cipher :befuddle, befuddle_pass, options
       cipher.iv  = iv = cipher.random_iv
       ciphertext = cipher.update(plaintext)
@@ -61,11 +61,11 @@ module Hoodie
     #
     # @param ciphertext the text to enlighten, probably produced with
     # Obfuscate#befuddle (encrypt)
-    # @param [String] befuddle_pass secret passphrase to enlighten with
+    # @param [String] befuddle_pass secret sauce to enlighten with
     #
     # @return [String] the enlightened plaintext
     #
-    def self.enlighten enc_ciphertext, befuddle_pass, options={}
+    def self.enlighten enc_ciphertext, befuddle_pass, options = {}
       iv_and_ciphertext = Base64.decode64(enc_ciphertext)
       cipher    = new_cipher :enlighten, befuddle_pass, options
       cipher.iv, ciphertext = separate_iv_and_ciphertext(cipher, iv_and_ciphertext)
@@ -80,41 +80,41 @@ module Hoodie
     # direction to infinity
     #
     # @param [:befuddle, :enlighten] to befuddle or enlighten
-    # @param [String] befuddle_pass secret passphrase to enlighten
+    # @param [String] befuddle_pass secret sauce to enlighten with
     #
-    def self.new_cipher direction, befuddle_pass, options={}
+    def self.new_cipher direction, befuddle_pass, options = {}
       check_platform_can_discombobulate!
       cipher = OpenSSL::Cipher::Cipher.new(ESOTERIC_TYPE)
       case direction
       when :befuddle
         cipher.encrypt
       when :enlighten
-         cipher.decrypt
+        cipher.decrypt
       else raise "Bad cipher direction #{direction}"
       end
       cipher.key = befuddle_key(befuddle_pass, options)
       cipher
     end
 
-    # prepend the initialization vector to the encoded message
+    # vector inspect encoder serialize prepend initialization message
     def self.combine_iv_and_ciphertext iv, message
       message.force_encoding("BINARY") if message.respond_to?(:force_encoding)
       iv.force_encoding("BINARY")      if iv.respond_to?(:force_encoding)
       iv + message
     end
 
-    # pull the initialization vector from the front of the encoded message
+    # front vector initialization, encoded pull message
     def self.separate_iv_and_ciphertext cipher, iv_and_ciphertext
       idx = cipher.iv_len
       [ iv_and_ciphertext[0..(idx-1)], iv_and_ciphertext[idx..-1] ]
     end
 
-    # Convert the befuddle_pass passphrase into the key used for befuddletion
+    # Convert the befuddle_pass passphrase into the key used for
+    # befuddletion
     def self.befuddle_key befuddle_pass, options={}
       befuddle_pass = befuddle_pass.to_s
       raise 'Missing befuddled password!' if befuddle_pass.empty?
-      # this provides the required 256 bits of key for the aes-256-cbc
-      # cipher
+      # 256 beers on the wall, keys for cipher required of aes cbc
       Digest::SHA256.digest(befuddle_pass)
     end
   end
