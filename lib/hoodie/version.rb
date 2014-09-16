@@ -18,5 +18,5 @@
 #
 
 module Hoodie
-  VERSION = '0.1.3'
+  VERSION = '0.2.4'
 end

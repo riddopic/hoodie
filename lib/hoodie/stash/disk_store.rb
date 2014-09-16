@@ -12,9 +12,9 @@
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied. See the License for the specific language governing
+# permissions and limitations under the License.
 #
 
 require 'tmpdir'
@@ -103,12 +103,10 @@ module DiskStash
     # temp path. On Winders Dir.tmpdir returns the correct path.
     #
     def file_store
-      tmp = defined?(Chef::Config) ? Chef::Config[:file_cache_path] : Dir.tmpdir
       if OS.windows?
-        win_friendly_path(::File.join(tmp, '._stash'))
+        win_friendly_path('/chef/._stash_')
       else
-        '_stash'
-        # ::File.join(tmp, '._stash')
+        ::File.join('var', 'lib', '._stash')
       end
     end
 
@@ -122,7 +120,7 @@ module DiskStash
     end
 
     def _write_cache_file(key, content)
-      f = ::File.open(cache_file(key), 'w+' )
+      f = ::File.open(cache_file(key), 'wb' )
       f.flock(::File::LOCK_EX)
       f.write(content)
       f.close
@@ -130,7 +128,7 @@ module DiskStash
     end
 
     def _read_cache_file(key)
-    	f = ::File.open(cache_file(key), 'r')
+    	f = ::File.open(cache_file(key), 'rb')
     	f.flock(::File::LOCK_SH)
     	out = f.read
     	f.close

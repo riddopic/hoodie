@@ -77,17 +77,13 @@ module Anemone
       key   = ::File.basename(file, '.*').downcase.to_sym
       type  = ::File.extname(file)[1..-1].downcase.to_sym
       id    = Hoodie::Obfuscate.befuddle(file, Digest::MD5.hexdigest(body.to_s))
-      mtime = Time.parse(@headers['last-modified'][0]).to_i
       utime = Time::now.to_i
-      state = utime > mtime ? :clean : :dirty
       key = { key => { type => {
         id:             id,
-        cache_state:    state,
         file:           file,
         key:            key,
         type:           type,
         url:            @url.to_s,
-        mtime:          mtime,
         links:          links.map(&:to_s),
         code:           @code,
         visited:        @visited,
