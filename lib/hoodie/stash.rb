@@ -18,7 +18,8 @@
 #
 
 require 'hoodie/stash/disk_store' unless defined?(DiskStash)
-require 'hoodie/stash/mem_store' unless defined?(MemStash)
+require 'hoodie/stash/mem_store'  unless defined?(MemStash)
+require 'hoodie/memoizable'       unless defined?(Memoizable)
 
 # Define the basic cache and default store objects
 module Stash

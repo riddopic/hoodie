@@ -106,7 +106,7 @@ module DiskStash
       if OS.windows?
         win_friendly_path('/chef/._stash_')
       else
-        ::File.join('var', 'lib', '._stash')
+        ::File.join(::File::SEPARATOR, 'var', 'lib', '._stash')
       end
     end
 
@@ -120,7 +120,8 @@ module DiskStash
     end
 
     def _write_cache_file(key, content)
-      f = ::File.open(cache_file(key), 'wb' )
+      mode = OS.windows? ? 'wb' : 'w+'
+      f = ::File.open(cache_file(key), mode)
       f.flock(::File::LOCK_EX)
       f.write(content)
       f.close
@@ -128,7 +129,8 @@ module DiskStash
     end
 
     def _read_cache_file(key)
-    	f = ::File.open(cache_file(key), 'rb')
+      mode = OS.windows? ? 'rb' : 'r'
+    	f = ::File.open(cache_file(key), mode)
     	f.flock(::File::LOCK_SH)
     	out = f.read
     	f.close

@@ -17,28 +17,24 @@
 # limitations under the License.
 #
 
-# TODO: This doesn't belong in here, it's cookbook specific...
+require 'hoodie'            unless defined?(Hoodie)
 require 'anemone'           unless defined?(Anemone)
 require 'hoodie/memoizable' unless defined?(Memoizable)
 
 class Rash
   include Memoizable
 
+  # Initializes a new store object.
+  #
+  # @param data [Hash] (optional) data to load into the stash.
+  #
+  # @return nothing.
+  #
   def initialize(url, path)
     @url = url
     @path = path
     memoize [:fetch], Stash.new(DiskStash::Cache.new)
-    @store = fetch
-  end
-
-  def fetch
-    results = []
-    Anemone.crawl(@url, discard_page_bodies: true) do |anemone|
-      anemone.on_pages_like(/\/#{@path}\/\w+\/\w+\.(ini|zip)$/i) do |page|
-        results << page.to_hash
-      end
-    end
-    results.reduce({}, :recursive_merge)
+    @store ||= fetch
   end
 
   # Retrieves the value for a given key
@@ -65,6 +61,22 @@ class Rash
   #
   def keys
     @store.keys
+  end
+
+  private #   P R O P R I E T À   P R I V A T A   Vietato L'accesso
+
+  # Loads a rash hash of data into the rash or create a new one.
+  #
+  # @return nothing.
+  #
+  def fetch
+    results = []
+    Anemone.crawl(@url, discard_page_bodies: true) do |anemone|
+      anemone.on_pages_like(/\/#{@path}\/\w+\/\w+\.(ini|zip)$/i) do |page|
+        results << page.to_hash
+      end
+    end
+    results.reduce({}, :recursive_merge)
   end
 end
 
