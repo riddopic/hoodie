@@ -47,6 +47,20 @@ class Rash
     @store[key]
   end
 
+  # Store the given value with the given key, either an an argument
+  # or block. If a previous value was set it will be overwritten
+  # with the new value.
+  #
+  # @param key [Symbol, String] string or symbol representing the key
+  # @param value [Object] any object that represents the value (optional)
+  # @param block [&block] that returns the value to set (optional)
+  #
+  # @return nothing.
+  #
+  def []=(key, value)
+    @store[key] = value
+  end
+
   # return the size of the store as an integer
   #
   # @return [Fixnum]
