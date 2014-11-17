@@ -19,6 +19,7 @@
 
 require 'hoodie/stash/mem_store'
 require 'hoodie/stash/disk_store'
+require 'hoodie/identity_map'
 require 'hoodie/memoizable'
 require 'hoodie/obfuscate'
 require 'hoodie/version'

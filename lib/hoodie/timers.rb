@@ -3,7 +3,7 @@ require 'set'
 require 'hitimes'
 require 'forwardable'
 
-module Timers
+module Hoodie::Timers
   # An individual timer set to fire a given proc at a given time. A timer is
   # always connected to a Timer::Group but it would ONLY be in @group.timers
   # if it also has a @handle specified. Otherwise it is either PAUSED or has
@@ -106,22 +106,20 @@ module Timers
         end
         str << ", recurs every #{interval}" if recurring
       else
-        str << "dead"
+        str << 'dead'
       end
-      str << ">"
+      str << '>'
     end
   end
 
   # An exclusive, monotonic timeout class.
   class Wait
-    safe_require 'hitimes'
-
     def self.for(duration, &block)
       if duration
-        timeout = self.new(duration)
+        timeout = new(duration)
         timeout.while_time_remaining(&block)
       else
-        while true
+        loop do
           yield(nil)
         end
       end
@@ -132,11 +130,11 @@ module Timers
       @remaining = true
     end
 
-    attr :duration
-    attr :remaining
+    attr_reader :duration
+    attr_reader :remaining
 
     # Yields while time remains for work to be done:
-    def while_time_remaining(&block)
+    def while_time_remaining(&_block)
       @interval = Hitimes::Interval.new
       @interval.start
       while time_remaining?
@@ -151,12 +149,11 @@ module Timers
 
     def time_remaining?
       @remaining = (@duration - @interval.duration)
-      return @remaining > 0
+      @remaining > 0
     end
   end
 
   class Group
-    safe_require 'hitimes'
     include Enumerable
     extend Forwardable
     def_delegators :@timers, :each, :empty?
@@ -170,13 +167,13 @@ module Timers
     end
 
     # Scheduled events:
-    attr :events
+    attr_reader :events
 
     # Active timers:
-    attr :timers
+    attr_reader :timers
 
     # Paused timers:
-    attr :paused_timers
+    attr_reader :paused_timers
 
     # Call the given block after the given interval. The first argument will be
     # the time at which the group was asked to fire timers for.
@@ -193,7 +190,7 @@ module Timers
     # Wait for the next timer and fire it. Can take a block, which should behave
     # like sleep(n), except that n may be nil (sleep forever) or a negative
     # number (fire immediately after return).
-    def wait(&block)
+    def wait(&_block)
       if block_given?
         yield wait_interval
 
@@ -214,29 +211,25 @@ module Timers
     # - -ve: timers expired already
     # -   0: timers ready to fire
     # - +ve: timers waiting to fire
-    def wait_interval(offset = self.current_offset)
+    def wait_interval(offset = current_offset)
       if handle = @events.first
         return handle.time - Float(offset)
       end
     end
 
     # Fire all timers that are ready.
-    def fire(offset = self.current_offset)
+    def fire(offset = current_offset)
       @events.fire(offset)
     end
 
     # Pause all timers.
     def pause
-      @timers.dup.each do |timer|
-        timer.pause
-      end
+      @timers.dup.each(&:pause)
     end
 
     # Resume all timers.
     def resume
-      @paused_timers.dup.each do |timer|
-        timer.resume
-      end
+      @paused_timers.dup.each(&:resume)
     end
     alias_method :continue, :resume
 
@@ -249,9 +242,7 @@ module Timers
 
     # Cancel all timers.
     def cancel
-      @timers.dup.each do |timer|
-        timer.cancel
-      end
+      @timers.dup.each(&:cancel)
     end
 
     # The group's current time.
@@ -270,7 +261,7 @@ module Timers
       end
 
       # The absolute time that the handle should be fired at.
-      attr :time
+      attr_reader :time
 
       # Cancel this timer, O(1).
       def cancel!
@@ -284,7 +275,7 @@ module Timers
         @callback.nil?
       end
 
-      def > other
+      def >(other)
         @time > other.to_f
       end
 
@@ -312,7 +303,7 @@ module Timers
       index = bisect_left(@sequence, handle)
       # Maintain sorted order, O(logN) insertion time.
       @sequence.insert(index, handle)
-      return handle
+      handle
     end
 
     # Returns the first non-cancelled handle.
@@ -344,21 +335,21 @@ module Timers
     # time.
     def pop(time)
       index = bisect_left(@sequence, time)
-      return @sequence.pop(@sequence.size - index)
+      @sequence.pop(@sequence.size - index)
     end
 
     # Return the left-most index where to insert item e, in a list a, assuming
     # a is sorted in descending order.
     def bisect_left(a, e, l = 0, u = a.length)
       while l < u
-        m = l + (u-l).div(2)
+        m = l + (u - l).div(2)
         if a[m] > e
-          l = m+1
+          l = m + 1
         else
           u = m
         end
       end
-      return l
+      l
     end
   end
 end

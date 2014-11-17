@@ -103,7 +103,7 @@ module Anemone
       key   = ::File.basename(file, '.*').downcase.to_sym
       type  = ::File.extname(file)[1..-1].downcase.to_sym
       id    = Hoodie::Obfuscate.befuddle(file, Digest::MD5.hexdigest(body.to_s))
-      utime = Time::now.to_i
+      utime = Time.now.to_i
       key = { key => { type => {
         id:             id,
         file:           file,
@@ -119,7 +119,7 @@ module Anemone
         utime:          utime,
         md5_digest:     Digest::MD5.hexdigest(body.to_s),
         sha256_digest:  Digest::SHA256.hexdigest(body.to_s)
-      }}}
+      } } }
     end
   end
 end

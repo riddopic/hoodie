@@ -20,9 +20,9 @@
 require 'tmpdir'
 
 module DiskStash
-	# Disk stashing method variable caching hash, string, array store.
-	class Cache
-		include Enumerable
+  # Disk stashing method variable caching hash, string, array store.
+  class Cache
+    include Enumerable
 
     # @return [String] location of DiskStash::Cache.store
     #
@@ -35,29 +35,29 @@ module DiskStash
     # @return nothing.
     #
     def initialize(store = file_store)
-    	@store = store
+      @store = store
       _ensure_store_directory
     end
 
-	  # Clear the whole stash or the value of a key
-	  #
-	  # @param key [Symbol, String] (optional) string or symbol
+    # Clear the whole stash or the value of a key
+    #
+    # @param key [Symbol, String] (optional) string or symbol
     # representing the key to clear
-	  #
-	  # @return [Hash] with a key, return the value it had, without
+    #
+    # @return [Hash] with a key, return the value it had, without
     # returns {}
-	  #
+    #
     def clear!(key = nil)
       if key.nil?
         ::Dir[::File.join(store, '*.cache')].each do |file|
           ::File.delete(file)
         end
       else
-        ::File.delete(cache_file(key)) if ::File.exists?(cache_file(key))
+        ::File.delete(cache_file(key)) if ::File.exist?(cache_file(key))
       end
     end
 
-		# Retrieves the value for a given key, if nothing is set,
+    # Retrieves the value for a given key, if nothing is set,
     # returns nil
     #
     # @param key [Symbol, String] representing the key
@@ -68,11 +68,11 @@ module DiskStash
       if key.is_a? Array
         hash = {}
         key.each do |k|
-          hash[k] = Marshal::load(_read_cache_file(k))
+          hash[k] = Marshal.load(_read_cache_file(k))
         end
         hash unless hash.empty?
       else
-        Marshal::load(_read_cache_file(key))
+        Marshal.load(_read_cache_file(key))
       end
     rescue Errno::ENOENT
       nil # key hasn't been created
@@ -89,15 +89,15 @@ module DiskStash
     # @return nothing.
     #
     def []=(key, value)
-    	_write_cache_file(key, Marshal::dump(value))
+      _write_cache_file(key, Marshal.dump(value))
     end
 
-		# returns path to cache file with 'key'
-	  def cache_file key
-	  	::File.join(store, key.to_s + '.cache')
-	  end
+    # returns path to cache file with 'key'
+    def cache_file(key)
+      ::File.join(store, key.to_s + '.cache')
+     end
 
-		private #   P R O P R I E T À   P R I V A T A   divieto di accesso
+    private #   P R O P R I E T À   P R I V A T A   divieto di accesso
 
     # return Chef tmpfile path if running under Chef, else return OS
     # temp path. On Winders Dir.tmpdir returns the correct path.
@@ -114,7 +114,7 @@ module DiskStash
     # backslashes are used everywhere
     #
     def win_friendly_path(path)
-      system_drive = ENV['SYSTEMDRIVE'] ? ENV['SYSTEMDRIVE'] : ""
+      system_drive = ENV['SYSTEMDRIVE'] ? ENV['SYSTEMDRIVE'] : ''
       path = ::File.join(system_drive, path)
       path.gsub!(::File::SEPARATOR, (::File::ALT_SEPARATOR || '\\'))
     end
@@ -130,20 +130,20 @@ module DiskStash
 
     def _read_cache_file(key)
       mode = OS.windows? ? 'rb' : 'r'
-    	f = ::File.open(cache_file(key), mode)
-    	f.flock(::File::LOCK_SH)
-    	out = f.read
-    	f.close
-    	out
+      f = ::File.open(cache_file(key), mode)
+      f.flock(::File::LOCK_SH)
+      out = f.read
+      f.close
+      out
     end
 
-	  def read_cache_mtime(key)
-	  	nil unless ::File.exists?(cache_file(key))
-	  	::File.mtime(cache_file(key))
-	  end
+    def read_cache_mtime(key)
+      nil unless ::File.exist?(cache_file(key))
+      ::File.mtime(cache_file(key))
+     end
 
-	  def _ensure_store_directory
-	  	::Dir.mkdir(store) unless ::File.directory?(store)
-	  end
-	end
+    def _ensure_store_directory
+      ::Dir.mkdir(store) unless ::File.directory?(store)
+     end
+  end
 end

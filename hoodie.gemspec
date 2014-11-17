@@ -1,16 +1,16 @@
 # encoding: utf-8
 lib = File.expand_path('../lib/', __FILE__)
-$:.unshift lib unless $:.include?(lib)
+$LOAD_PATH.unshift lib unless $LOAD_PATH.include?(lib)
 
-require "hoodie/version"
+require 'hoodie/version'
 
 Gem::Specification.new do |s|
   s.name        = 'hoodie'
   s.version     = Hoodie::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.date        = Time.now.strftime("%Y-%m-%d")
+  s.date        = Time.now.strftime('%Y-%m-%d')
   s.summary     = 'Pragmatic hoodie concurrency hipster with ruby'
-  s.description = "A collection of hipster methods and hoodie tools to make even the nerdy rubyist look cool"
+  s.description = 'A collection of hipster methods and hoodie tools to make even the nerdy rubyist look cool'
   s.authors     = ['Stefano Harding']
   s.email       = 'riddopic@gmail.com'
   s.homepage    = 'https://github.com/riddopic/hoodie'

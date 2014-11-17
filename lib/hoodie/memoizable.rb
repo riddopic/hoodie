@@ -23,7 +23,6 @@ require 'hoodie/stash' unless defined?(Stash)
 # method so it doesn't need to be re-computed every time that method
 # is called.
 module Memoizable
-
   # Create a new memoized method. To use, extend class with Memoizable,
   # then, in initialize, call memoize
   #

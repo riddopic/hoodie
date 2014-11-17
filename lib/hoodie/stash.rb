@@ -23,7 +23,6 @@ require 'hoodie/memoizable'       unless defined?(Memoizable)
 
 # Define the basic cache and default store objects
 module Stash
-
   # check if we're using a version if Ruby that supports caller_locations
   NEW_CALL = Kernel.respond_to? 'caller_locations'
 

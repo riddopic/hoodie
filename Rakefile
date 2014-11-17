@@ -13,4 +13,3 @@ RuboCop::RakeTask.new(:rubocop) do |task|
 end
 
 task default: [:spec, :rubocop, :build, :install]
-

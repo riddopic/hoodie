@@ -17,118 +17,249 @@
 # limitations under the License.
 #
 
-module Hoodie
-  # Returns an aligned_string of text relative to the size of the terminal
-  # window. If a line in the string exceeds the width of the terminal window
-  # the line will be chopped off at the whitespace chacter closest to the
-  # end of the line and prepended to the next line, keeping all indentation.
-  #
-  # The terminal size is detected by default, but custom line widths can
-  # passed. All strings will also be left aligned with 5 whitespace characters
-  # by default.
-  def self.align_text(text, console_cols = nil, preamble = 5)
-    unless console_cols
-      console_cols = terminal_dimensions[0]
 
-      # if unknown size we default to the typical unix default
-      console_cols = 80 if console_cols == 0
+require 'securerandom'
+require 'time'
+
+module Hoodie::Utils
+  def self.included(base)
+    base.extend(ClassMethods)
+  end
+  private_class_method :included
+
+  module ClassMethods
+    def callable(call_her)
+      call_her.respond_to?(:call) ? call_her : lambda { call_her }
     end
 
-    console_cols -= preamble
-
-    # Return unaligned text if console window is too small
-    return text if console_cols <= 0
-
-    # If console is 0 this implies unknown so we assume the common
-    # minimal unix configuration of 80 characters
-    console_cols = 80 if console_cols <= 0
-
-    text = text.split("\n")
-    piece = ''
-    whitespace = 0
-
-    text.each_with_index do |line, i|
-      whitespace = 0
-
-      while whitespace < line.length && line[whitespace].chr == ' '
-        whitespace += 1
-      end
-
-      # If the current line is empty, indent it so that a snippet
-      # from the previous line is aligned correctly.
-      if line == ""
-        line = (" " * whitespace)
-      end
-
-      # If text was snipped from the previous line, prepend it to the
-      # current line after any current indentation.
-      if piece != ''
-        # Reset whitespaces to 0 if there are more whitespaces than there are
-        # console columns
-        whitespace = 0 if whitespace >= console_cols
-
-        # If the current line is empty and being prepended to, create a new
-        # empty line in the text so that formatting is preserved.
-        if text[i + 1] && line == (" " * whitespace)
-          text.insert(i + 1, "")
-        end
-
-        # Add the snipped text to the current line
-        line.insert(whitespace, "#{piece} ")
-      end
-
-      piece = ''
-
-      # Compare the line length to the allowed line length.
-      # If it exceeds it, snip the offending text from the line
-      # and store it so that it can be prepended to the next line.
-      if line.length > (console_cols + preamble)
-        reverse = console_cols
-
-        while line[reverse].chr != ' '
-          reverse -= 1
-        end
-
-        piece = line.slice!(reverse, (line.length - 1)).lstrip
-      end
-
-      # If a snippet exists when all the columns in the text have been
-      # updated, create a new line and append the snippet to it, using
-      # the same left alignment as the last line in the text.
-      if piece != '' && text[i+1].nil?
-        text[i+1] = "#{' ' * (whitespace)}#{piece}"
-        piece = ''
-      end
-
-      # Add the preamble to the line and add it to the text
-      line = ((' ' * preamble) + line)
-      text[i] = line
+    def camelize(underscored_word)
+      underscored_word.to_s.gsub(/(?:^|_)(.)/) { $1.upcase }
     end
 
-    text.join("\n")
+    def classify(table_name)
+      camelize singularize(table_name.to_s.sub(/.*\./, ''))
+    end
+
+    def class_name
+      demodulize(self.class)
+    end
+
+    def caller_name
+      caller_locations(2, 1).first.label
+    end
+
+    def demodulize(class_name_in_module)
+      class_name_in_module.to_s.sub(/^.*::/, '')
+    end
+
+    def pluralize(word)
+      word.to_s.sub(/([^s])$/, '\1s')
+    end
+
+    def singularize(word)
+      word.to_s.sub(/s$/, '').sub(/ie$/, 'y')
+    end
+
+    def underscore(camel_cased_word)
+      word = camel_cased_word.to_s.dup
+      word.gsub!(/::/, '/')
+      word.gsub!(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+      word.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
+      word.tr! '-', '_'
+      word.downcase!
+      word
+    end
+
+    # Return the date and time in "HTTP-date" format as defined by RFC 7231.
+    #
+    # @return [Date,Time] in "HTTP-date" format
+    def utc_httpdate
+      Time.now.utc.httpdate
+    end
+
+    def request_id
+      SecureRandom.uuid
+    end
+
+    def twenty_four_hours_ago
+      Time.now - ( 60 * 60 * 24)
+    end
+
+    def verify_options(accepted, actual) # @private
+      return unless debug || $DEBUG
+      unless (act=Set[*actual.keys]).subset?(acc=Set[*accepted])
+        raise Croesus::Errors::UnknownOption,
+          "\nDetected unknown option(s): #{(act - acc).to_a.inspect}\n" <<
+          "Accepted options are: #{accepted.inspect}"
+      end
+      yield if block_given?
+    end
+  end # module ClassMethods
+
+  # ============================================================================
+
+  def callable(call_her)
+    call_her.respond_to?(:call) ? call_her : lambda { call_her }
   end
 
-  # Figures out the columns and lines of the current tty
+  def camelize(underscored_word)
+    underscored_word.to_s.gsub(/(?:^|_)(.)/) { $1.upcase }
+  end
+
+  def classify(table_name)
+    camelize singularize(table_name.to_s.sub(/.*\./, ''))
+  end
+
+  def class_name
+    demodulize(self.class)
+  end
+
+  def caller_name
+    caller_locations(2, 1).first.label
+  end
+
+  def demodulize(class_name_in_module)
+    class_name_in_module.to_s.sub(/^.*::/, '')
+  end
+
+  def pluralize(word)
+    word.to_s.sub(/([^s])$/, '\1s')
+  end
+
+  def singularize(word)
+    word.to_s.sub(/s$/, '').sub(/ie$/, 'y')
+  end
+
+  def underscore(camel_cased_word)
+    word = camel_cased_word.to_s.dup
+    word.gsub!(/::/, '/')
+    word.gsub!(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+    word.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
+    word.tr! '-', '_'
+    word.downcase!
+    word
+  end
+
+  # Return the date and time in "HTTP-date" format as defined by RFC 7231.
   #
-  # Returns [0, 0] if it can't figure it out or if you're
-  # not running on a tty
-  def self.terminal_dimensions(stdout = STDOUT, environment = ENV)
-    return [0, 0] unless stdout.tty?
+  # @return [Date,Time] in "HTTP-date" format
+  def utc_httpdate
+    Time.now.utc.httpdate
+  end
 
-    return [80, 40] if Util.windows?
+  def request_id
+    SecureRandom.uuid
+  end
 
-    if environment["COLUMNS"] && environment["LINES"]
-      return [environment["COLUMNS"].to_i, environment["LINES"].to_i]
+  def twenty_four_hours_ago
+    Time.now - ( 60 * 60 * 24)
+  end
 
-    elsif environment["TERM"] && command_in_path?("tput")
-      return [`tput cols`.to_i, `tput lines`.to_i]
+  def verify_options(accepted, actual) # @private
+    return unless debug || $DEBUG
+    unless (act=Set[*actual.keys]).subset?(acc=Set[*accepted])
+      raise Croesus::Errors::UnknownOption,
+        "\nDetected unknown option(s): #{(act - acc).to_a.inspect}\n" <<
+        "Accepted options are: #{accepted.inspect}"
+    end
+    yield if block_given?
+  end
 
+  # Returns the columns and lines of the current tty.
+  #
+  # @return [Integer]
+  #   number of columns and lines of tty, returns [0, 0] if no tty is present.
+  #
+  # @api public
+  def terminal_dimensions
+    [0, 0] unless  STDOUT.tty?
+    [80, 40] if OS.windows?
+
+    if ENV['COLUMNS'] && ENV['LINES']
+      [ENV['COLUMNS'].to_i, ENV['LINES'].to_i]
+    elsif ENV['TERM'] && command_in_path?('tput')
+      [`tput cols`.to_i, `tput lines`.to_i]
     elsif command_in_path?('stty')
-      return `stty size`.scan(/\d+/).map {|s| s.to_i }
+      `stty size`.scan(/\d+/).map {|s| s.to_i }
     else
-      return [0, 0]
+      [0, 0]
     end
   rescue
     [0, 0]
+  end
+
+  # Checks in PATH returns true if the command is found
+  def command_in_path?(command)
+    found = ENV['PATH'].split(File::PATH_SEPARATOR).map do |p|
+      File.exist?(File.join(p, command))
+    end
+    found.include?(true)
+  end
+
+  # Runs a code block, and retries it when an exception occurs. Should the
+  # number of retries be reached without success, the last exception will be
+  # raised.
+  #
+  # @param opts [Hash{Symbol => Value}]
+  # @option opts [Fixnum] :tries
+  #   number of attempts to retry before raising the last exception
+  # @option opts [Fixnum] :sleep
+  #   number of seconds to wait between retries, use lambda to exponentially
+  #   increasing delay between retries
+  # @option opts [Array(Exception)] :on
+  #   the type of exception(s) to catch and retry on
+  # @option opts [Regex] :matching
+  #   match based on the exception message
+  # @option opts [Block] :ensure
+  #   ensure a block of code is executed, regardless of whether an exception
+  #   is raised
+  #
+  # @return [Block]
+  #
+  def retrier(opts = {}, &block)
+    defaults = {
+      tries:    2,
+      sleep:    1,
+      on:       StandardError,
+      matching: /.*/,
+      :ensure => Proc.new {}
+    }
+
+    check_for_invalid_options(opts, defaults)
+    defaults.merge!(opts)
+
+    return if defaults[:tries] == 0
+
+    on_exception, tries = [defaults[:on]].flatten, defaults[:tries]
+    retries = 0
+    retry_exception = nil
+
+    begin
+      yield retries, retry_exception
+    rescue *on_exception => exception
+      raise unless exception.message =~ defaults[:matching]
+      raise if retries+1 >= defaults[:tries]
+
+      # Interrupt Exception could be raised while sleeping
+      begin
+        sleep defaults[:sleep].respond_to?(:call) ?
+          defaults[:sleep].call(retries) : defaults[:sleep]
+      rescue *on_exception
+      end
+
+      retries += 1
+      retry_exception = exception
+      retry
+    ensure
+      defaults[:ensure].call(retries)
+    end
+  end
+
+  private #   P R O P R I E T À   P R I V A T A   Vietato L'accesso
+
+  def check_for_invalid_options(custom_options, defaults)
+    invalid_options = defaults.merge(custom_options).keys - defaults.keys
+    raise ArgumentError.new('[Retrier] Invalid options: ' \
+      "#{invalid_options.join(", ")}") unless invalid_options.empty?
   end
 end

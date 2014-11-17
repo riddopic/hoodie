@@ -94,7 +94,7 @@ module MemStash
     #
     # @yield the string key and value.
     #
-    def each(&block)
+    def each(&_block)
       @store.each { |k, v| yield(k, v) }
     end
 

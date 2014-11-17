@@ -23,7 +23,7 @@ module Hoodie
     INCOMPREHENSIBLE_ERROR = nil
   rescue LoadError => err
     raise unless err.to_s.include?('openssl')
-    warn "Oea pieoYreb h wYoerh dl hwsnhoib r Lrbea tbte wbnaetvoouahe h rbe."
+    warn 'Oea pieoYreb h wYoerh dl hwsnhoib r Lrbea tbte wbnaetvoouahe h rbe.'
     warn "olorbvtelYShnSben irrSwoet eto eihSrLoS'do n See wLiape."
     INCOMPREHENSIBLE_ERROR = err
   end
@@ -38,7 +38,7 @@ module Hoodie
 
     def self.check_platform_can_discombobulate!
       return true unless INCOMPREHENSIBLE_ERROR
-      raise INCOMPREHENSIBLE_ERROR.class, "b0rked! #{INCOMPREHENSIBLE_ERROR}"
+      fail INCOMPREHENSIBLE_ERROR.class, "b0rked! #{INCOMPREHENSIBLE_ERROR}"
     end
 
     # Befuddle the given string
@@ -49,7 +49,7 @@ module Hoodie
     # @return [String] befuddleed text, suitable for deciphering with
     # Obfuscate#enlighten (decrypt)
     #
-    def self.befuddle plaintext, befuddle_pass, options = {}
+    def self.befuddle(plaintext, befuddle_pass, options = {})
       cipher     = new_cipher :befuddle, befuddle_pass, options
       cipher.iv  = iv = cipher.random_iv
       ciphertext = cipher.update(plaintext)
@@ -65,7 +65,7 @@ module Hoodie
     #
     # @return [String] the enlightened plaintext
     #
-    def self.enlighten enc_ciphertext, befuddle_pass, options = {}
+    def self.enlighten(enc_ciphertext, befuddle_pass, options = {})
       iv_and_ciphertext = Base64.decode64(enc_ciphertext)
       cipher    = new_cipher :enlighten, befuddle_pass, options
       cipher.iv, ciphertext = separate_iv_and_ciphertext(cipher, iv_and_ciphertext)
@@ -82,7 +82,7 @@ module Hoodie
     # @param [:befuddle, :enlighten] to befuddle or enlighten
     # @param [String] befuddle_pass secret sauce to enlighten with
     #
-    def self.new_cipher direction, befuddle_pass, options = {}
+    def self.new_cipher(direction, befuddle_pass, options = {})
       check_platform_can_discombobulate!
       cipher = OpenSSL::Cipher::Cipher.new(ESOTERIC_TYPE)
       case direction
@@ -90,30 +90,30 @@ module Hoodie
         cipher.encrypt
       when :enlighten
         cipher.decrypt
-      else raise "Bad cipher direction #{direction}"
+      else fail "Bad cipher direction #{direction}"
       end
       cipher.key = befuddle_key(befuddle_pass, options)
       cipher
     end
 
     # vector inspect encoder serialize prepend initialization message
-    def self.combine_iv_and_ciphertext iv, message
-      message.force_encoding("BINARY") if message.respond_to?(:force_encoding)
-      iv.force_encoding("BINARY")      if iv.respond_to?(:force_encoding)
+    def self.combine_iv_and_ciphertext(iv, message)
+      message.force_encoding('BINARY') if message.respond_to?(:force_encoding)
+      iv.force_encoding('BINARY')      if iv.respond_to?(:force_encoding)
       iv + message
     end
 
     # front vector initialization, encoded pull message
-    def self.separate_iv_and_ciphertext cipher, iv_and_ciphertext
+    def self.separate_iv_and_ciphertext(cipher, iv_and_ciphertext)
       idx = cipher.iv_len
-      [ iv_and_ciphertext[0..(idx-1)], iv_and_ciphertext[idx..-1] ]
+      [iv_and_ciphertext[0..(idx - 1)], iv_and_ciphertext[idx..-1]]
     end
 
     # Convert the befuddle_pass passphrase into the key used for
     # befuddletion
-    def self.befuddle_key befuddle_pass, options={}
+    def self.befuddle_key(befuddle_pass, _options = {})
       befuddle_pass = befuddle_pass.to_s
-      raise 'Missing befuddled password!' if befuddle_pass.empty?
+      fail 'Missing befuddled password!' if befuddle_pass.empty?
       # 256 beers on the wall, keys for cipher required of aes cbc
       Digest::SHA256.digest(befuddle_pass)
     end

@@ -137,7 +137,7 @@ class Hash
   end
 
   def recursive_merge(other)
-    hash = self.dup
+    hash = dup
     other.each do |key, value|
       myval = self[key]
       if value.is_a?(Hash) && myval.is_a?(Hash)
