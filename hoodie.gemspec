@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.files       = `git ls-files`.split
   s.test_files  = `git ls-files spec/*`.split
 
-  s.add_runtime_dependency 'anemone', '>= 0.7.2'
+  # s.add_runtime_dependency 'anemone', '>= 0.7.2'
   s.add_runtime_dependency 'hitimes'
 
   s.add_development_dependency 'rubocop',   '~> 0.26.0'
