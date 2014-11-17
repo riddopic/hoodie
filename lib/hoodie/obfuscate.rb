@@ -74,7 +74,7 @@ module Hoodie
       plaintext
     end
 
-    private #   P R O P R I E T À   P R I V A T A   divieto di accesso
+    protected #      A T T E N Z I O N E   A R E A   P R O T E T T A
 
     # Cipher create machine do, befuddle engage, enlighten. Dials set
     # direction to infinity
