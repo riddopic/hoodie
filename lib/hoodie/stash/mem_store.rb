@@ -68,8 +68,10 @@ module MemStash
     #
     #   stash.set('name') { 'Trigster' }
     #      => "Trigster"
+    #
     #   stash[:cash] = 'in the hash stash cache store'
     #      => "in the hash stash cache store"
+    #
     #   data = { id: 'trig', name: 'Trigster Jay', passwd: 'f00d' }
     #   stash[:juser] = data
     #      => {
