@@ -47,6 +47,3 @@ module Hoodie
     end
   end
 end
-
-
-include Hoodie::Logging
