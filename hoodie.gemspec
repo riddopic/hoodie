@@ -22,10 +22,10 @@ Gem::Specification.new do |s|
   # s.add_runtime_dependency 'anemone', '>= 0.7.2'
   s.add_runtime_dependency 'hitimes'
 
-  s.add_development_dependency 'rubocop',   '>= 0.26.0'
-  s.add_development_dependency 'rake',      '>= 10.3.2'
-  s.add_development_dependency 'coveralls', '>= 0.7.1'
-  s.add_development_dependency 'rspec',     '>= 3.1.0'
-  s.add_development_dependency 'fuubar',    '>= 2.0.0'
-  s.add_development_dependency 'timecop',   '>= 0.7.1'
+  s.add_development_dependency 'rubocop'
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'yard'
+  s.add_development_dependency 'yard-redcarpet-ext'
+  s.add_development_dependency 'redcarpet'
+  s.add_development_dependency 'github-markup'
 end

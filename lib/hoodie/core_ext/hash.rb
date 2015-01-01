@@ -2,7 +2,7 @@
 #
 # Author: Stefano Harding <riddopic@gmail.com>
 #
-# Copyright (C) 2014 Stefano Harding
+# Copyright (C) 2014-2015 Stefano Harding
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ class Hash
   # @return [Hash]
   #
   def transform_keys
-    return enum_for(:transform_keys) unless block_given?
+    enum_for(:transform_keys) unless block_given?
     result = self.class.new
     each_key do |key|
       result[yield(key)] = self[key]
@@ -91,7 +91,7 @@ class Hash
   # @return [Hash]
   #
   def recursively_symbolize_keys
-    recursively_transform_keys { |key| key.downcase.to_sym rescue key }
+    recursively_transform_keys { |key| key.to_sym rescue key }
   end
 
   # Returns a new hash with all keys converted to strings.
@@ -110,8 +110,52 @@ class Hash
     recursively_transform_keys { |key| key.to_s rescue key }
   end
 
+  # Returns a new hash with all keys converted to strings and the
+  # first letter capitalized.
+  #
+  # @return [Hash]
+  #
+  def capitalize_keys
+    transform_keys { |key| key.to_s.capitalize rescue key }
+  end
+
+  # Returns a new Hash, recursively converting all keys to strings
+  # and the first letter capitalized.
+  #
+  # @return [Hash]
+  #
+  def recursively_capitalize_key
+    recursively_transform_keys { |key| key.to_s.capitalize rescue key }
+  end
+
+  class UndefinedPathError < StandardError; end
+  # Recursively searchs a nested datastructure for a key and returns
+  # the value. If a block is provided its value will be returned if
+  # the key does not exist
+  #
+  # @example
+  #     options = { server: { location: { row: { rack: 34 } } } }
+  #     options.recursive_fetch :server, :location, :row, :rack
+  #                 # => 34
+  #     options.recursive_fetch(:non_existent_key) { 'default' }
+  #                 # => "default"
+  #
+  # @return [Hash, Array, String] value for key
+  #
+  def recursive_fetch(*args, &block)
+    args.reduce(self) do |obj, arg|
+      begin
+        arg = Integer(arg) if obj.is_a? Array
+        obj.fetch(arg)
+      rescue ArgumentError, IndexError, NoMethodError => e
+        break block.call(arg) if block
+        raise UndefinedPathError, "Could not fetch path (#{args.join(' > ')}) at #{arg}", e.backtrace
+      end
+    end
+  end
+
   def recursive_merge(other)
-    hash = dup
+    hash = self.dup
     other.each do |key, value|
       myval = self[key]
       if value.is_a?(Hash) && myval.is_a?(Hash)
