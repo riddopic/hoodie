@@ -1,18 +1,20 @@
 # encoding: UTF-8
 
-module Inflections
-  # Wraps inflections array
-  #
-  class RulesCollection < Array
-    # Applies first found rule to given word
+module Hoodie
+  module Inflections
+    # Wraps inflections array
     #
-    # @param [String] word
-    # @return [String] modified word
-    # @api private
-    def apply_to(word)
-      result = word.dup
-      each { |rule, replacement| break if result.gsub!(rule, replacement) }
-      result
+    class RulesCollection < Array
+      # Applies first found rule to given word
+      #
+      # @param [String] word
+      # @return [String] modified word
+      # @api private
+      def apply_to(word)
+        result = word.dup
+        each { |rule, replacement| break if result.gsub!(rule, replacement) }
+        result
+      end
     end
   end
 end

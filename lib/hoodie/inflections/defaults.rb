@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-Inflections.inflections do |inflect|
+Hoodie::Inflections.inflections do |inflect|
   inflect.plural(/$/, 's')
   inflect.plural(/s$/i, 's')
   inflect.plural(/^(ax|test)is$/i, '\1es')
