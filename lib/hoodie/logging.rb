@@ -21,7 +21,7 @@ require 'logger'
 require 'time'
 
 module Hoodie
-  module Log
+  module Logging
     @loggers ||= {}
 
     def demodulize(class_name_in_module)
@@ -52,7 +52,7 @@ module Hoodie
         log.progname = prefix
         log.formatter = Hoodie::Formatter.new
         log.formatter.datetime_format = '%F %T'
-        log.level = self.send(log_level)
+        log.level = eval(log_level)
         log
       end
 
