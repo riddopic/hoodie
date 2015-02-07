@@ -70,9 +70,9 @@ module Hoodie
 end
 
 require 'hoodie/core_ext/string'
-require 'hoodie/core_ext/object'
 require 'hoodie/core_ext/blank'
 require 'hoodie/core_ext/hash'
+require 'hoodie/core_ext/try'
 
 require 'hoodie/stash/mem_store'
 require 'hoodie/stash/disk_store'
