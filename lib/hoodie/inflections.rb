@@ -138,6 +138,20 @@ module Hoodie
       camelize(singularize(table_name.sub(/.*\./, '')))
     end
 
+    # Create a snake case string with an optional namespace prepended.
+    #
+    # @param [String] input
+    # @param [String] namespace
+    # @return [String]
+    def snakeify(input, namespace = nil)
+      input = input.dup
+      input.sub!(/^#{namespace}(\:\:)?/, '') if namespace
+      input.gsub!(/[A-Z]/) {|s| "_" + s}
+      input.downcase!
+      input.sub!(/^\_/, "")
+      input
+    end
+
     # Test if word is uncountable.
     #
     # @param [String] word
