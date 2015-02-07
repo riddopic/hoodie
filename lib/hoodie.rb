@@ -70,6 +70,7 @@ module Hoodie
 end
 
 require 'hoodie/core_ext/string'
+require 'hoodie/core_ext/object'
 require 'hoodie/core_ext/blank'
 require 'hoodie/core_ext/hash'
 
@@ -83,5 +84,6 @@ require 'hoodie/logging'
 require 'hoodie/version'
 require 'hoodie/timers'
 require 'hoodie/utils'
+require 'hoodie/proxy'
 require 'hoodie/stash'
 require 'hoodie/os'
