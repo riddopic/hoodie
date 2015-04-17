@@ -95,7 +95,7 @@ module DiskStash
     # returns path to cache file with 'key'
     def cache_file(key)
       ::File.join(store, key.to_s + '.cache')
-     end
+    end
 
     private #   P R O P R I E T À   P R I V A T A   divieto di accesso
 
@@ -106,7 +106,7 @@ module DiskStash
       if OS.windows?
         win_friendly_path('/chef/._stash_')
       else
-        ::File.join(::File::SEPARATOR, 'var', 'lib', '._stash')
+        ::File.join(::File::SEPARATOR, 'var', 'lib', '.__s_t_a_s_h__')
       end
     end
 
@@ -140,7 +140,7 @@ module DiskStash
     def read_cache_mtime(key)
       nil unless ::File.exist?(cache_file(key))
       ::File.mtime(cache_file(key))
-     end
+    end
 
     def _ensure_store_directory
       ::Dir.mkdir(store) unless ::File.directory?(store)

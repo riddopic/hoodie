@@ -105,20 +105,20 @@ module Anemone
       id    = Hoodie::Obfuscate.befuddle(file, Digest::MD5.hexdigest(body.to_s))
       utime = Time.now.to_i
       key = { key => { type => {
-        id:             id,
-        file:           file,
-        key:            key,
-        type:           type,
-        url:            @url.to_s,
-        links:          links.map(&:to_s),
-        code:           @code,
-        visited:        @visited,
-        depth:          @depth,
-        referer:        @referer.to_s,
-        fetched:        @fetched,
-        utime:          utime,
-        md5_digest:     Digest::MD5.hexdigest(body.to_s),
-        sha256_digest:  Digest::SHA256.hexdigest(body.to_s)
+        id:      id,
+        file:    file,
+        key:     key,
+        type:    type,
+        url:     @url.to_s,
+        links:   links.map(&:to_s),
+        code:    @code,
+        visited: @visited,
+        depth:   @depth,
+        referer: @referer.to_s,
+        fetched: @fetched,
+        utime:   utime,
+        sha1:    OpenSSL::Digest::SHA1.new(body.to_s),
+        sha256:  OpenSSL::Digest::SHA256.new(body.to_s)
       } } }
     end
   end

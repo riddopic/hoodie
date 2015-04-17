@@ -32,7 +32,7 @@ module Memoizable
     cache ||= Stash.new
     methods.each do |name|
       uncached_name = "#{name}_uncached".to_sym
-      (class << self; self; end).class_eval do
+      singleton_class.class_eval do
         alias_method uncached_name, name
         define_method(name) do |*a, &b|
           cache.cache(name) { send uncached_name, *a, &b }
