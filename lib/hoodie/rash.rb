@@ -99,10 +99,10 @@ end
 module Anemone
   class Page
     def to_hash
-      file  = ::File.basename(@url.to_s)
-      key   = ::File.basename(file, '.*').downcase.to_sym
-      type  = ::File.extname(file)[1..-1].downcase.to_sym
-      id    = Hoodie::Obfuscate.befuddle(file, Digest::MD5.hexdigest(body.to_s))
+      file  = File.basename(@url.to_s)
+      key   = File.basename(file, '.*').downcase.to_sym
+      type  = File.extname(file)[1..-1].downcase.to_sym
+      id    = key
       utime = Time.now.to_i
       key = { key => { type => {
         id:      id,
@@ -117,8 +117,8 @@ module Anemone
         referer: @referer.to_s,
         fetched: @fetched,
         utime:   utime,
-        sha1:    OpenSSL::Digest::SHA1.new(body.to_s),
-        sha256:  OpenSSL::Digest::SHA256.new(body.to_s)
+        sha1:    false,
+        sha256:  false
       } } }
     end
   end
