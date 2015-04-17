@@ -29,7 +29,7 @@ Gem::Specification.new do |gem|
   gem.description =   'A collection of hipster methods and hoodie tools to ' \
                       'make even the nerdy rubyist look cool.'
   gem.summary     =   'Pragmatic hoodie concurrency hipster with ruby'
-  gem.homepage    =   'https://github.com/riddopic/garcon'
+  gem.homepage    =   'https://github.com/riddopic/hoodie'
   gem.license     =   'Apache 2.0'
 
   gem.require_paths    = [ 'lib' ]

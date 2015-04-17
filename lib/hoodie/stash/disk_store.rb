@@ -105,8 +105,10 @@ module DiskStash
     def file_store
       if OS.windows?
         win_friendly_path('/chef/._stash_')
+      elsif OS.mac?
+        ::File.join(::File::SEPARATOR, 'var', 'tmp', '._stash')
       else
-        ::File.join(::File::SEPARATOR, 'var', 'lib', '.__s_t_a_s_h__')
+        ::File.join(::File::SEPARATOR, 'var', 'lib', '._stash')
       end
     end
 
