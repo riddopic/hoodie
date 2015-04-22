@@ -1,8 +1,8 @@
 # encoding: UTF-8
 #
-# Author: Stefano Harding <riddopic@gmail.com>
-#
-# Copyright (C) 2014-2015 Stefano Harding
+# Author:    Stefano Harding <riddopic@gmail.com>
+# License:   Apache License, Version 2.0
+# Copyright: (C) 2014-2015 Stefano Harding
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -76,14 +76,10 @@ require 'hoodie/core_ext/try'
 
 require 'hoodie/stash/mem_store'
 require 'hoodie/stash/disk_store'
-require 'hoodie/identity_map'
 require 'hoodie/inflections'
-require 'hoodie/memoizable'
 require 'hoodie/obfuscate'
 require 'hoodie/logging'
 require 'hoodie/version'
-require 'hoodie/timers'
-require 'hoodie/utils'
 require 'hoodie/proxy'
 require 'hoodie/stash'
 require 'hoodie/os'

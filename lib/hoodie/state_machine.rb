@@ -17,34 +17,16 @@
 # limitations under the License.
 #
 
-module Hoodie
+class StateMachine
+  def initialize(transition_function, initial_state)
+    @transition_function = transition_function
+    @state = initial_state
+  end
 
-  # A Configuration instance
-  class Configuration
+  attr_reader :state
 
-    # Access the logging setting for this instance
-    attr_accessor :logging
-
-    # Access to the logging level for this instance
-    attr_accessor :level
-
-    # Initialized a configuration instance
-    #
-    # @return [undefined]
-    #
-    # @api private
-    def initialize(options={})
-      @logging = options.fetch(:logging, false)
-      @level   = options.fetch(:level,   :info)
-
-      yield self if block_given?
-    end
-
-    # @api private
-    def to_h
-      { logging: logging,
-        level:   level
-      }.freeze
-    end
+  def send_input(input)
+    @state, output = @transition_function.call(@state, input)
+    output
   end
 end
