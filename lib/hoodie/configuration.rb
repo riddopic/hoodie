@@ -22,10 +22,12 @@ module Hoodie
   # A Configuration instance
   class Configuration
 
-    # Access the logging setting for this instance
+    # @!attribute [rw] logging
+    #   @return [Boolean] Enable or disable logging.
     attr_accessor :logging
 
-    # Access to the logging level for this instance
+    # @!attribute [rw] level
+    #   @return [Symbol] Set the desired loging level.
     attr_accessor :level
 
     # Initialized a configuration instance
@@ -36,8 +38,26 @@ module Hoodie
     def initialize(options={})
       @logging = options.fetch(:logging, false)
       @level   = options.fetch(:level,   :info)
+      @crypto  = Crypto::Configuration.new
 
       yield self if block_given?
+    end
+
+    # Access the crypto for this instance and optional configure a
+    # new crypto with the passed block.
+    #
+    # @example
+    #   Garcon.config do |c|
+    #     c.crypto.password = "!mWh0!s@y!m"
+    #     c.crypto.salt     = "9e5f851900cad8892ac8b737b7370cbe"
+    #   end
+    #
+    # @return [Crypto]
+    #
+    # @api private
+    def crypto(&block)
+      @crypto = Crypto::Configuration.new(&block) if block_given?
+      @crypto
     end
 
     # @api private

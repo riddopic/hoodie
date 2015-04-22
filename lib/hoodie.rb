@@ -17,7 +17,11 @@
 # limitations under the License.
 #
 
+require 'hoodie/core_ext/string'
+require 'hoodie/core_ext/blank'
 require 'hoodie/configuration'
+require 'hoodie/core_ext/hash'
+require 'hoodie/core_ext/try'
 
 module Hoodie
 
@@ -31,55 +35,47 @@ module Hoodie
   # Raised when an operation times out.
   TimeoutError = Class.new(StandardError)
 
-  class << self
-    # @param [TrueClass, FalseClass] sets the global logging configuration.
-    # @return [Hoodie]
-    # @api public
-    def logging=(value)
-      configuration.logging = value
-      self
-    end
+  # @param [Boolean] value
+  #   Sets the global logging configuration.
+  #
+  # @return [Hoodie]
+  #
+  def self.logging=(value)
+    configuration.logging = value
+    self
+  end
 
-    # @return [TrueClass, FalseClass] the global logging setting.
-    # @api public
-    def logging
-      configuration.logging
-    end
+  # @return [Boolean]
+  #   The global logging setting.
+  #
+  def self.logging
+    configuration.logging
+  end
 
-    # Provides access to the global configuration.
-    #
-    # @example
-    #   Hoodie.config do |config|
-    #     config.logging = true
-    #   end
-    #
-    # @return [Configuration]
-    #
-    # @api public
-    def config(&block)
-      yield configuration if block_given?
-      configuration
-    end
+  # Provides access to the global configuration.
+  #
+  # @example
+  #   Hoodie.config do |config|
+  #     config.logging = true
+  #   end
+  #
+  # @return [Configuration]
+  #
+  def self.config(&block)
+    yield configuration if block_given?
+    configuration
+  end
 
-    # @return [Configuration] global configuration instance.
-    # @api private
-    def configuration
-      @configuration ||= Configuration.new
-    end
+  # @return [Configuration]
+  #   The global configuration instance.
+  #
+  def self.configuration
+    @configuration ||= Configuration.new
   end
 end
 
-require 'hoodie/core_ext/string'
-require 'hoodie/core_ext/blank'
-require 'hoodie/core_ext/hash'
-require 'hoodie/core_ext/try'
-
-require 'hoodie/stash/mem_store'
-require 'hoodie/stash/disk_store'
 require 'hoodie/inflections'
-require 'hoodie/obfuscate'
 require 'hoodie/logging'
 require 'hoodie/version'
-require 'hoodie/proxy'
+require 'hoodie/utils'
 require 'hoodie/stash'
-require 'hoodie/os'

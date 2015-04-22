@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-
+require 'hoodie/core_ext/string'
 require 'logger'
 require 'time'
 
@@ -96,7 +96,7 @@ module Hoodie
     def call(severity, time, progname, msg)
       format % [
         format_datetime(time).blue,
-        severity.green,
+        format_severity(severity),
         msg2str(msg).strip.orange
       ]
     end
@@ -105,6 +105,23 @@ module Hoodie
 
     def format
       "[%s] %5s: %s\n"
+    end
+
+    def format_severity(severity)
+      case severity
+      when 'FATAL'
+        severity.bright_red
+      when 'ERROR'
+        severity.red
+      when 'WARN'
+        severity.yellow
+      when 'DEBUG'
+        severity.light_gray
+      when 'INFO'
+        severity.green
+      else
+        severity
+      end
     end
 
     def format_datetime(time)

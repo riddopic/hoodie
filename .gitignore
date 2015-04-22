@@ -191,3 +191,4 @@ cscope.po.out
 vendor/bundle
 vendor/cache
 Gemfile.lock
+repl.rb

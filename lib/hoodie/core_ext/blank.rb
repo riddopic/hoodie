@@ -25,7 +25,7 @@ class Object
   #   [1].blank?        #=>  false
   #   [nil].blank?      #=>  false
   #
-  # @return [TrueClass, FalseClass]
+  # @return [Boolean]
   #
   def blank?
     nil? || (respond_to?(:empty?) && empty?)
@@ -37,7 +37,7 @@ class Object
   #   [1].present?        #=>  true
   #   [nil].present?      #=>  true
   #
-  # @return [TrueClass, FalseClass]
+  # @return [Boolean]
   #
   def present?
     !blank?
@@ -100,7 +100,7 @@ class String
   #   "     ".blank?    #=>  true
   #   " hey ho ".blank? #=>  false
   #
-  # @return [TrueClass, FalseClass]
+  # @return [Boolean]
   #
   def blank?
     strip.empty?

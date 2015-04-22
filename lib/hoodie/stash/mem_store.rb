@@ -17,13 +17,14 @@
 # limitations under the License.
 #
 
-module MemStash
+module Hoodie
   # Basic cache object stash store (uses a Hash)
-  class Cache
+  #
+  class MemStash
     include Enumerable
 
-    # @return [Hash] of the mem stash cache hash store
-    #
+    # @!attribute [r] :store
+    #   @return [Stash::MemStash] location of Stash::DiskStore store.
     attr_reader :store
 
     # Initializes a new store object.
@@ -124,7 +125,7 @@ module MemStash
     #
     # @param key [Symbol, String] a string or symbol representing the key
     #
-    # @return [TrueClass, FalseClass]
+    # @return [Boolean]
     #
     def include?(key)
       @store.include? key
@@ -135,7 +136,7 @@ module MemStash
     #
     # @param value [String] a string representing the value
     #
-    # @return [TrueClass, FalseClass]
+    # @return [Boolean]
     #
     def value?(value)
       @store.value? value

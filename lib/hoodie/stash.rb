@@ -17,102 +17,105 @@
 # limitations under the License.
 #
 
-require 'hoodie/stash/disk_store' unless defined?(DiskStash)
-require 'hoodie/stash/mem_store'  unless defined?(MemStash)
-require 'hoodie/memoizable'       unless defined?(Memoizable)
+require 'hoodie/stash/disk_stash'
+require 'hoodie/stash/mem_stash'
+require 'hoodie/stash/memoizable'
+require 'hoodie/utils/os'
 
-# Define the basic cache and default store objects
-module Stash
-  # check if we're using a version if Ruby that supports caller_locations
-  NEW_CALL = Kernel.respond_to? 'caller_locations'
+module Hoodie
+  # Define the basic cache and default store objects
+  #
+  module Stash
+    # check if we're using a version if Ruby that supports caller_locations
+    NEW_CALL = Kernel.respond_to? 'caller_locations'
 
-  class << self
     # insert a helper .new() method for creating a new object
     #
-    def new(*args)
+    def self.new(*args)
       self::Cache.new(*args)
     end
 
     # helper to get the calling function name
     #
-    def caller_name
+    def self.caller_name
       NEW_CALL ? caller_locations(2, 1).first.label : caller[1][/`([^']*)'/, 1]
     end
-  end
 
-  # Default store type
-  DEFAULT_STORE = MemStash::Cache
+    # Default store type
+    DEFAULT_STORE = MemStash
 
-  # Key/value cache store
-  class Cache
-    # @return [Hash] of the mem stash cache hash store
-    #
-    attr_reader :store
+    # Key/value cache store
+    class Cache
 
-    # Initializes a new empty store
-    #
-    def initialize(params = {})
-      params = { store: params } unless params.is_a? Hash
-      @store = params.fetch(:store) { Stash::DEFAULT_STORE.new }
-    end
+      # @!attribute [r] :store
+      #   @return [Stash::DiskStore] location of Stash::DiskStore store.
+      attr_reader :store
 
-    # Clear the whole stash store or the value of a key
-    #
-    # @param key [Symbol, String] (optional) representing the key to
-    # clear.
-    #
-    # @return nothing.
-    #
-    def clear!(key = nil)
-      key = key.to_sym unless key.nil?
-      @store.clear! key
-    end
+      # Initializes a new empty store
+      #
+      def initialize(params = {})
+        params = { store: params } unless params.is_a? Hash
+        @store = params.fetch(:store) { Hoodie::DEFAULT_STORE.new }
+      end
 
-    # Retrieves the value for a given key, if nothing is set,
-    # returns KeyError
-    #
-    # @param key [Symbol, String] representing the key
-    #
-    # @raise [KeyError] if no such key found
-    #
-    # @return [Hash, Array, String] value for key
-    #
-    def [](key = nil)
-      key ||= Stash.caller_name
-      fail KeyError, 'Key not cached' unless include? key.to_sym
-      @store[key.to_sym]
-    end
+      # Clear the whole stash store or the value of a key
+      #
+      # @param key [Symbol, String] (optional) representing the key to
+      # clear.
+      #
+      # @return nothing.
+      #
+      def clear!(key = nil)
+        key = key.to_sym unless key.nil?
+        @store.clear! key
+      end
 
-    # Retrieves the value for a given key, if nothing is set,
-    # run the code, cache the result, and return it
-    #
-    # @param key [Symbol, String] representing the key
-    # @param block [&block] that returns the value to set (optional)
-    #
-    # @return [Hash, Array, String] value for key
-    #
-    def cache(key = nil, &code)
-      key ||= Stash.caller_name
-      @store[key.to_sym] ||= code.call
-    end
+      # Retrieves the value for a given key, if nothing is set,
+      # returns KeyError
+      #
+      # @param key [Symbol, String] representing the key
+      #
+      # @raise [KeyError] if no such key found
+      #
+      # @return [Hash, Array, String] value for key
+      #
+      def [](key = nil)
+        key ||= Stash.caller_name
+        fail KeyError, 'Key not cached' unless include? key.to_sym
+        @store[key.to_sym]
+      end
 
-    # return the size of the store as an integer
-    #
-    # @return [Fixnum]
-    #
-    def size
-      @store.size
-    end
+      # Retrieves the value for a given key, if nothing is set,
+      # run the code, cache the result, and return it
+      #
+      # @param key [Symbol, String] representing the key
+      # @param block [&block] that returns the value to set (optional)
+      #
+      # @return [Hash, Array, String] value for key
+      #
+      def cache(key = nil, &code)
+        key ||= Stash.caller_name
+        @store[key.to_sym] ||= code.call
+      end
 
-    # return a boolean indicating presence of the given key in the store
-    #
-    # @param key [Symbol, String] a string or symbol representing the key
-    #
-    # @return [TrueClass, FalseClass]
-    #
-    def include?(key = nil)
-      key ||= Stash.caller_name
-      @store.include? key.to_sym
+      # return the size of the store as an integer
+      #
+      # @return [Fixnum]
+      #
+      def size
+        @store.size
+      end
+
+      # return a boolean indicating presence of the given key in the store
+      #
+      # @param key [Symbol, String] a string or symbol representing the key
+      #
+      # @return [Boolean]
+      #
+      def include?(key = nil)
+        key ||= Stash.caller_name
+        @store.include? key.to_sym
+      end
     end
   end
 end
