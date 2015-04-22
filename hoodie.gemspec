@@ -41,4 +41,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rake',        '~> 10.4'
   gem.add_development_dependency 'yard',        '~> 0.8'
   gem.add_development_dependency 'pry'
+  gem.add_development_dependency 'inch'
+  gem.add_development_dependency 'yardstick'
 end

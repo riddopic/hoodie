@@ -19,28 +19,13 @@
 
 require 'bundler/gem_tasks'
 
-task default: 'test'
-
-desc 'Run all tests except `kitchen`'
-task test: [:yard, :rubocop, :spec]
-
-desc 'Run all tasks'
-task all: [:yard, :rubocop, :spec]
-
-desc 'Build documentation'
-task doc: [:yard]
-
-require 'yard'
-YARD::Config.load_plugin 'redcarpet-ext'
-YARD::Rake::YardocTask.new do |t|
-  t.files = ['**/*.rb', '-', 'README.md', 'CHANGELOG.md', 'LICENSE']
-  t.options = ['--markup-provider=redcarpet', '--markup=markdown']
+desc 'Generate Ruby documentation'
+task :yard do
+  require 'yard'
+  YARD::Rake::YardocTask.new do |t|
+    t.files = ['**/*.rb', '-', 'README.md', 'LICENSE']
+    t.stats_options = %w(--list-undoc)
+  end
 end
 
-require 'rubocop/rake_task'
-RuboCop::RakeTask.new
-
-require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new(:chefspec) do |t|
-  t.rspec_opts = '--color --format progress'
-end
+task doc: %w(yard)
