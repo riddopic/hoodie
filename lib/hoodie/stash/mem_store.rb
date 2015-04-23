@@ -18,136 +18,137 @@
 #
 
 module Hoodie
-  # Basic cache object stash store (uses a Hash)
-  #
-  class MemStash
-    include Enumerable
+  module Stash
+    # Basic cache object stash store (uses a Hash)
+    #
+    class MemStore
 
-    # @!attribute [r] :store
-    #   @return [Stash::MemStash] location of Stash::DiskStore store.
-    attr_reader :store
+      # @!attribute [r] :store
+      #   @return [Stash::MemStash] location of Stash::DiskStore store.
+      attr_reader :store
 
-    # Initializes a new store object.
-    #
-    # @param data [Hash] (optional) data to load into the stash.
-    #
-    # @return nothing.
-    #
-    def initialize(_ = {})
-      @store = {}
-    end
+      # Initializes a new store object.
+      #
+      # @param data [Hash] (optional) data to load into the stash.
+      #
+      # @return nothing.
+      #
+      def initialize(_ = {})
+        @store = {}
+      end
 
-    # Clear the whole stash store or the value of a key
-    #
-    # @param key [Symbol, String] (optional) representing the key to
-    # clear.
-    #
-    # @return nothing.
-    #
-    def clear!(key = nil)
-      key.nil? ? @store.clear : @store.delete(key)
-    end
+      # Clear the whole stash store or the value of a key
+      #
+      # @param key [Symbol, String] (optional) representing the key to
+      # clear.
+      #
+      # @return nothing.
+      #
+      def clear!(key = nil)
+        key.nil? ? @store.clear : @store.delete(key)
+      end
 
-    # Retrieves the value for a given key, if nothing is set,
-    # returns KeyError
-    #
-    # @param key [Symbol, String] representing the key
-    #
-    # @raise [KeyError] if no such key found
-    #
-    # @return [Hash, Array, String] value for key
-    #
-    def [](key)
-      @store[key]
-    end
+      # Retrieves the value for a given key, if nothing is set,
+      # returns KeyError
+      #
+      # @param key [Symbol, String] representing the key
+      #
+      # @raise [KeyError] if no such key found
+      #
+      # @return [Hash, Array, String] value for key
+      #
+      def [](key)
+        @store[key]
+      end
 
-    # Store the given value with the given key, either an an argument
-    # or block. If a previous value was set it will be overwritten
-    # with the new value.
-    #
-    # @example store a value
-    #
-    #   stash.set('name') { 'Trigster' }
-    #      => "Trigster"
-    #
-    #   stash[:cash] = 'in the hash stash cache store'
-    #      => "in the hash stash cache store"
-    #
-    #   data = { id: 'trig', name: 'Trigster Jay', passwd: 'f00d' }
-    #   stash[:juser] = data
-    #      => {
-    #            :id => "trig",
-    #          :name => "Trigster Jay",
-    #        :passwd => "f00d"
-    #      }
-    #
-    # @param key [Symbol, String] string or symbol representing the key
-    # @param value [Object] any object that represents the value (optional)
-    # @param block [&block] that returns the value to set (optional)
-    #
-    # @return nothing.
-    #
-    def []=(key, value)
-      @store[key] = value
-    end
-
-    # Iterates over all key-value pairs.
-    #
-    # @param block [&block] that will receive the key/value of each pair
-    #
-    # @yield the string key and value.
-    #
-    def each(&_block)
-      @store.each { |k, v| yield(k, v) }
-    end
-
-    # Loads a hash of data into the stash.
-    #
-    # @param hash [Hash] of data with either String or Symbol keys.
-    #
-    # @return nothing.
-    #
-    def load(data)
-      data.each do |key, value|
+      # Store the given value with the given key, either an an argument
+      # or block. If a previous value was set it will be overwritten
+      # with the new value.
+      #
+      # @example store a value
+      #
+      #   stash.set('name') { 'Trigster' }
+      #      => "Trigster"
+      #
+      #   stash[:cash] = 'in the hash stash cache store'
+      #      => "in the hash stash cache store"
+      #
+      #   data = { id: 'trig', name: 'Trigster Jay', passwd: 'f00d' }
+      #   stash[:juser] = data
+      #      => {
+      #            :id => "trig",
+      #          :name => "Trigster Jay",
+      #        :passwd => "f00d"
+      #      }
+      #
+      # @param key [Symbol, String] string or symbol representing the key
+      # @param value [Object] any object that represents the value (optional)
+      # @param block [&block] that returns the value to set (optional)
+      #
+      # @return nothing.
+      #
+      def []=(key, value)
         @store[key] = value
       end
-    end
 
-    # return the size of the store as an integer
-    #
-    # @return [Fixnum]
-    #
-    def size
-      @store.size
-    end
+      # Iterates over all key-value pairs.
+      #
+      # @param block [&block] that will receive the key/value of each pair
+      #
+      # @yield the string key and value.
+      #
+      def each(&_block)
+        @store.each { |k, v| yield(k, v) }
+      end
 
-    # return a boolean indicating presence of the given key in the store
-    #
-    # @param key [Symbol, String] a string or symbol representing the key
-    #
-    # @return [Boolean]
-    #
-    def include?(key)
-      @store.include? key
-    end
-    alias_method :key?, :include?
+      # Loads a hash of data into the stash.
+      #
+      # @param hash [Hash] of data with either String or Symbol keys.
+      #
+      # @return nothing.
+      #
+      def load(data)
+        data.each do |key, value|
+          @store[key] = value
+        end
+      end
 
-    # return a boolean indicating presence of the given value in the store
-    #
-    # @param value [String] a string representing the value
-    #
-    # @return [Boolean]
-    #
-    def value?(value)
-      @store.value? value
-    end
+      # return the size of the store as an integer
+      #
+      # @return [Fixnum]
+      #
+      def size
+        @store.size
+      end
 
-    # return all keys in the store as an array
-    #
-    # @return [Array<String, Symbol>] all the keys in store
-    #
-    def keys
-      @store.keys
+      # return a boolean indicating presence of the given key in the store
+      #
+      # @param key [Symbol, String] a string or symbol representing the key
+      #
+      # @return [Boolean]
+      #
+      def include?(key)
+        @store.include? key
+      end
+      alias_method :key?, :include?
+
+      # return a boolean indicating presence of the given value in the store
+      #
+      # @param value [String] a string representing the value
+      #
+      # @return [Boolean]
+      #
+      def value?(value)
+        @store.value? value
+      end
+
+      # return all keys in the store as an array
+      #
+      # @return [Array<String, Symbol>] all the keys in store
+      #
+      def keys
+        @store.keys
+      end
     end
   end
 end

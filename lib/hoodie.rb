@@ -52,6 +52,23 @@ module Hoodie
     configuration.logging
   end
 
+  # @param [Symbol] value
+  #   Sets the Stash Store.
+  #
+  # @return [Hoodie]
+  #
+  def self.store=(value)
+    configuration.store = value
+    self
+  end
+
+  # @return [Symbol]
+  #   The Stash Store setting.
+  #
+  def self.store
+    configuration.store
+  end
+
   # Provides access to the global configuration.
   #
   # @example

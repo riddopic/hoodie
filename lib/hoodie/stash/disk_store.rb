@@ -20,10 +20,10 @@
 require 'tmpdir'
 
 module Hoodie
-  # Disk stashing method variable caching hash, string, array store.
-  #
-  class Stash
-    class DiskStash
+  module Stash
+    # Disk stashing method variable caching hash, string, array store.
+    #
+    class DiskStore
 
       # @!attribute [r] :store
       #   @return [Stash::DiskStore] location of Stash::DiskStore store.

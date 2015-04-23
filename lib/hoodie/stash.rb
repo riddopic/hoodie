@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'hoodie/stash/disk_stash'
-require 'hoodie/stash/mem_stash'
-require 'hoodie/stash/memoizable'
-require 'hoodie/utils/os'
+require_relative 'stash/disk_store'
+require_relative 'stash/mem_store'
+require_relative 'stash/cache'
+require_relative 'utils/os'
 
 module Hoodie
   # Define the basic cache and default store objects
@@ -42,80 +42,6 @@ module Hoodie
     end
 
     # Default store type
-    DEFAULT_STORE = MemStash
-
-    # Key/value cache store
-    class Cache
-
-      # @!attribute [r] :store
-      #   @return [Stash::DiskStore] location of Stash::DiskStore store.
-      attr_reader :store
-
-      # Initializes a new empty store
-      #
-      def initialize(params = {})
-        params = { store: params } unless params.is_a? Hash
-        @store = params.fetch(:store) { Hoodie::DEFAULT_STORE.new }
-      end
-
-      # Clear the whole stash store or the value of a key
-      #
-      # @param key [Symbol, String] (optional) representing the key to
-      # clear.
-      #
-      # @return nothing.
-      #
-      def clear!(key = nil)
-        key = key.to_sym unless key.nil?
-        @store.clear! key
-      end
-
-      # Retrieves the value for a given key, if nothing is set,
-      # returns KeyError
-      #
-      # @param key [Symbol, String] representing the key
-      #
-      # @raise [KeyError] if no such key found
-      #
-      # @return [Hash, Array, String] value for key
-      #
-      def [](key = nil)
-        key ||= Stash.caller_name
-        fail KeyError, 'Key not cached' unless include? key.to_sym
-        @store[key.to_sym]
-      end
-
-      # Retrieves the value for a given key, if nothing is set,
-      # run the code, cache the result, and return it
-      #
-      # @param key [Symbol, String] representing the key
-      # @param block [&block] that returns the value to set (optional)
-      #
-      # @return [Hash, Array, String] value for key
-      #
-      def cache(key = nil, &code)
-        key ||= Stash.caller_name
-        @store[key.to_sym] ||= code.call
-      end
-
-      # return the size of the store as an integer
-      #
-      # @return [Fixnum]
-      #
-      def size
-        @store.size
-      end
-
-      # return a boolean indicating presence of the given key in the store
-      #
-      # @param key [Symbol, String] a string or symbol representing the key
-      #
-      # @return [Boolean]
-      #
-      def include?(key = nil)
-        key ||= Stash.caller_name
-        @store.include? key.to_sym
-      end
-    end
+    DEFAULT_STORE = MemStore.new
   end
 end

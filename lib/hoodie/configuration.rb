@@ -30,14 +30,19 @@ module Hoodie
     #   @return [Symbol] Set the desired loging level.
     attr_accessor :level
 
+    # @!attribute [ro] store
+    #   @return [Symbol] The current Stash Store.
+    attr_accessor :store
+
     # Initialized a configuration instance
     #
     # @return [undefined]
     #
     # @api private
     def initialize(options={})
-      @logging = options.fetch(:logging, false)
-      @level   = options.fetch(:level,   :info)
+      @logging = options.fetch(:logging,   false)
+      @level   = options.fetch(:level,     :info)
+      @store   = options.fetch(:store, :memstore)
       @crypto  = Crypto::Configuration.new
 
       yield self if block_given?
@@ -63,7 +68,8 @@ module Hoodie
     # @api private
     def to_h
       { logging: logging,
-        level:   level
+        level:   level,
+        store:   store
       }.freeze
     end
   end
