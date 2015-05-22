@@ -26,21 +26,24 @@ module Hoodie
   # and uncountable words are kept in inflections.rb.
   #
   module Inflections
-
     # Convert input to UpperCamelCase. Will also convert '/' to '::' which is
     # useful for converting paths to namespaces.
     #
     # @param [String] input
+    #
     # @return [String]
+    #
     def self.camelize(input)
-      input.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:\A|_)(.)/) { $1.upcase }
+      input.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:\A|_)(.)/) {$1.upcase}
     end
 
     # Convert input to underscored, lowercase string. Changes '::' to '/' to
     # convert namespaces to paths.
     #
     # @param [String] input
+    #
     # @return [String]
+    #
     def self.underscore(input)
       word = input.gsub(/::/, '/')
       underscorize(word)
@@ -49,7 +52,9 @@ module Hoodie
     # Convert input underscores to dashes.
     #
     # @param [String] input
+    #
     # @return [String]
+    #
     def self.dasherize(input)
       input.tr('_', '-')
     end
@@ -57,7 +62,9 @@ module Hoodie
     # Return unscoped constant name.
     #
     # @param [String] input
+    #
     # @return [String]
+    #
     def self.demodulize(input)
       input.split('::').last
     end
@@ -65,7 +72,9 @@ module Hoodie
     # Creates a foreign key name
     #
     # @param [String] input
+    #
     # @return [String]
+    #
     def self.foreign_key(input)
       "#{underscorize(demodulize(input))}_id"
     end
@@ -75,7 +84,9 @@ module Hoodie
     # caller is igored.
     #
     # @param [String] input
+    #
     # @return [Class, Module]
+    #
     def self.constantize(input)
       names = input.split('::')
       names.shift if names.first.empty?
@@ -94,7 +105,9 @@ module Hoodie
     # Convert a number into an ordinal string.
     #
     # @param [Fixnum] number
+    #
     # @return [String]
+    #
     def self.ordinalize(number)
       abs_value = number.abs
 
@@ -112,7 +125,9 @@ module Hoodie
     # Convert input word string to plural
     #
     # @param [String] word
+    #
     # @return [String]
+    #
     def self.pluralize(word)
       return word if uncountable?(word)
       inflections.plurals.apply_to(word)
@@ -121,7 +136,9 @@ module Hoodie
     # Convert word to singular
     #
     # @param [String] word
+    #
     # @return [String]
+    #
     def self.singularize(word)
       return word if uncountable?(word)
       inflections.singulars.apply_to(word)
@@ -130,7 +147,9 @@ module Hoodie
     # Humanize string.
     #
     # @param [String] input
+    #
     # @return [String]
+    #
     def self.humanize(input)
       result = inflections.humans.apply_to(input)
       result.gsub!(/_id\z/, "")
@@ -142,7 +161,9 @@ module Hoodie
     # Tabelize input string.
     #
     # @param [String] input
+    #
     # @return [String]
+    #
     def self.tableize(input)
       pluralize(underscore(input).gsub('/', '_'))
     end
@@ -151,7 +172,9 @@ module Hoodie
     # names to models.
     #
     # @param [String] input
+    #
     # @return [String]
+    #
     def self.classify(table_name)
       camelize(singularize(table_name.sub(/.*\./, '')))
     end
@@ -159,9 +182,12 @@ module Hoodie
     # Create a snake case string with an optional namespace prepended.
     #
     # @param [String] input
+    #
     # @param [String] namespace
+    #
     # @return [String]
-    def snakeify(input, namespace = nil)
+    #
+    def self.snakeify(input, namespace = nil)
       input = input.dup
       input.sub!(/^#{namespace}(\:\:)?/, '') if namespace
       input.gsub!(/[A-Z]/) {|s| "_" + s}
@@ -173,7 +199,9 @@ module Hoodie
     # Test if word is uncountable.
     #
     # @param [String] word
+    #
     # @return [Boolean] true, if word is uncountable
+    #
     def self.uncountable?(word)
       word.empty? || inflections.uncountables.include?(word.downcase)
     end
@@ -181,7 +209,9 @@ module Hoodie
     # Convert input to underscored, lowercase string
     #
     # @param [String] input
+    #
     # @return [String]
+    #
     def self.underscorize(word)
       word.gsub!(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
       word.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
@@ -191,9 +221,10 @@ module Hoodie
     end
     private_class_method :underscorize
 
-    # Yields a singleton instance of Inflecto::Inflections.
+    # Yields a singleton instance of Garcon::Inflections.
     #
-    # @return [Inflections::Inflections]
+    # @return [Garcon::Inflections]
+    #
     def self.inflections
       instance = Inflections.instance
       block_given? ? yield(instance) : instance
@@ -201,6 +232,6 @@ module Hoodie
   end
 end
 
-require 'hoodie/inflections/rules_collection'
-require 'hoodie/inflections/inflections'
-require 'hoodie/inflections/defaults'
+require_relative 'inflections/rules_collection'
+require_relative 'inflections/inflections'
+require_relative 'inflections/defaults'

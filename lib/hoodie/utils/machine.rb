@@ -29,11 +29,11 @@
 #     )
 #
 #     def initialize
-#       @state_machine = StateMachine.new(STATE_TRANSITIONS, :awaiting_foo)
+#       @machine = Machine.new(STATE_TRANSITIONS, :awaiting_foo)
 #     end
 #
 #     def handle_event(event)
-#       action = @state_machine.send_input(event)
+#       action = @machine.send_input(event)
 #       send(action) unless action.nil?
 #     end
 #
@@ -80,4 +80,3 @@ module Hoodie
     end
   end
 end
-

@@ -48,8 +48,8 @@ module Hoodie
   module Konstruktor
     def takes(*names)
       attr_reader *names
-      include Konstruktor::Constructor(*names)
-      extend Konstruktor::Let
+      include Hoodie::Constructor(*names)
+      extend Hoodie::Let
     end
   end
 

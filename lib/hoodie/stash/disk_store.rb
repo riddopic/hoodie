@@ -31,9 +31,10 @@ module Hoodie
 
       # Initializes a new disked backed stash hash cache store.
       #
-      # @param path [String] location for stash store cache.
+      # @param [String] path
+      #   Location for stash store cache.
       #
-      # @return nothing.
+      # @return [DiskStore]
       #
       def initialize(store = file_store)
         @store = store
@@ -117,7 +118,11 @@ module Hoodie
         write_cache_file(key, Marshal.dump(value))
       end
 
-      # returns path to cache file with 'key'
+      # Returns path to cache file with 'key'
+      #
+      # @return [String]
+      #   Path to cache file.
+      #
       def cache_file(key)
         File.join(store, key.to_s + '.cache')
       end
